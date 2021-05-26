@@ -1,0 +1,40 @@
+version: '3'
+
+services:
+  misp-web:
+    build: web
+    depends_on:
+      - db
+    image: cybert79be/misp
+    restart: unless-stopped
+    ports:
+      - "81:80"
+      - "444:443"
+    volumes:
+      - /dev/urandom:/dev/random
+      - misp-web:/var/www/MISP
+    environment:
+      - MYSQL_HOST=misp_db
+      - MYSQL_DATABASE=misp
+      - MYSQL_USER=misp
+      - MYSQL_PASSWORD=misp
+      - MISP_ADMIN_EMAIL=admin@admin.test
+      - MISP_ADMIN_PASSPHRASE=admin
+      - MISP_BASEURL=
+      - POSTFIX_RELAY_HOST=relay.fqdn
+      - TIMEZONE=Europe/Brussels
+
+  misp-db:
+    image: mysql/mysql-server:5.7
+    restart: unless-stopped
+    volumes:
+      - misp-db:/var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=misp
+      - MYSQL_USER=misp
+      - MYSQL_PASSWORD=misp
+      - MYSQL_ROOT_PASSWORD=misp
+volumes:
+    misp-db:
+    misp-web:
+
